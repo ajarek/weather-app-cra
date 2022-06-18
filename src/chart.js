@@ -18,6 +18,7 @@ export class ChartJS {
 
   render() {
     const canvas = document.createElement("canvas");
+    canvas.style.border = "1px solid gray";
     const ctx = canvas.getContext("2d");
 
     this.chart = new Chart(ctx, {

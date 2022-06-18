@@ -1,8 +1,10 @@
-import { fetchData } from "./fetchData.js"
-import { Input } from "./input.js"
-import { Button } from "./button.js"
-import { Message } from "./message.js"
-import { ChartJS } from "./chart.js"
+import { fetchData } from "./fetchData"
+import { Input } from "./input"
+import { Message } from "./message"
+import { ChartJS } from "./chart"
+import { Map } from "./map"
+import {debounce} from './debounce'
+
 const APPID = "96d145cbc67ffa8619b24c37dd8a0cab"
 
 class App {
@@ -11,6 +13,8 @@ class App {
     this.query = "Kołobrzeg"
     this.data = null
     this.hasError = null
+    this.fetchWeatherDebounced = debounce(300)(this.fetchWeather)
+    this.fetchWeather()
   }
 
   fetchWeather() {
@@ -21,6 +25,8 @@ class App {
 
   onInput(event) {
     this.query = event.target.value
+    this.fetchWeather()
+    this.render()
   }
 
   setData(data) {
@@ -43,17 +49,19 @@ class App {
       })
       return dataTemp
     }
-    
-
   }
-  onClick() {
-    this.fetchWeather()
-    this.render()
-}
+  
   render() {
+    this.container.style.maxWidth = "768px"
+    this.container.style.margin = '0 auto'
     this.container.innerHTML = ""
     const input = new Input("Enter the city", this.query, (event) =>this.onInput(event))
-    const button = new Button("Get the weather", () => this.onClick())
+   
+    const lat = this.data && this.data.city && this.data.city.coord && this.data.city.coord.lat
+    const lng = this.data && this.data.city && this.data.city.coord && this.data.city.coord.lon
+    const name = this.data && this.data.city && this.data.city.name
+    const mapElement = new Map(lng, lat, name)
+    // this.container.appendChild()
 
     const transformedData = this.transformData(this.data)
         const chartElement = new ChartJS(transformedData)
@@ -63,8 +71,11 @@ class App {
       this.container.appendChild(messageElement.render())
       this.hasError = null
     }
-    this.container.append(input.render(), button.render(), chartElement.render())
+  
+    this.container.append(input.render(),mapElement.render(), chartElement.render())
   }
 }
+
 const app = new App()
 app.render()
+

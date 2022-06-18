@@ -9,6 +9,7 @@ export class Input {
     const input = document.createElement("input");
     input.style.width = "100%";
     input.style.marginBottom = "16px";
+    input.style.marginTop = "16px";
     input.style.borderRadius = "4px";
     input.style.border = "1px solid gray";
     input.style.boxSizing = "border-box";
